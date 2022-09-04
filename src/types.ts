@@ -4,6 +4,6 @@ export interface CreateContractData {
   shortName: string
 }
 
-export interface ShowContracts {
+export interface ShowContractsData {
   chainId: number
 }

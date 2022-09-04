@@ -1,4 +1,4 @@
-import { CreateContractData, ShowContracts } from "./types"
+import { CreateContractData, ShowContractsData } from "./types"
 import axios from "axios"
 import "dotenv/config"
 
@@ -28,7 +28,7 @@ export function createContract(nftData: CreateContractData) {
   return axios.request(options)
 }
 
-export function showContracts(nftData: ShowContracts) {
+export function showContracts(nftData: ShowContractsData) {
   return axios.get(
     `https://thentic.tech/api/contracts?key=${THENTIC_API_KEY}&chain_id=${nftData.chainId}`
   )

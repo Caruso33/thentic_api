@@ -1,7 +1,7 @@
 import { createContract, showContracts } from "./api"
-import { CreateContractData } from "./types"
+import { CreateContractData, ShowContractsData } from "./types"
 
-async function createNftContract(nftData: CreateContractData) {
+async function createNftContract(nftData: CreateContractData): Promise<void> {
   try {
     const { status, data } = await createContract(nftData)
 
@@ -18,6 +18,20 @@ async function createNftContract(nftData: CreateContractData) {
   }
 }
 
+async function showNftContracts(
+  nftData: ShowContractsData
+): Promise<any | void> {
+  try {
+    const { data } = await showContracts(nftData)
+    console.log("Found following contracts: ")
+    console.log(data?.contracts)
+
+    return data?.contracts
+  } catch (e: any) {
+    console.error(`Error showing Contracts: ${e.message}`)
+  }
+}
+
 async function main() {
   const chainId = 80001 // mumbai
   const name = "Thentic Tobias Leinss Application"
@@ -27,9 +41,15 @@ async function main() {
 
   // await createNftContract(nftData)
 
-  const { data } = await showContracts({ chainId })
-  console.log("Found following contracts: ")
-  console.log(data)
+  const contractData = await showNftContracts({ chainId })
+
+  if (!contractData || contractData?.length === 0) {
+    console.error(`No contract data found`)
+    process.exit(0)
+  }
+
+  const contractAddress = contractData[0].contract
+  console.log(`Contract address is: ${contractAddress}`)
 }
 
 main()
