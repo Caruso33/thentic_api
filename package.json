@@ -1,0 +1,10 @@
+{
+  "name": "thentic",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "Tobias Leinss <caruso33@web.de>",
+  "license": "MIT",
+  "scripts": {
+    "start": "node src/index.js"
+  }
+}
