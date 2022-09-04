@@ -1,12 +1,7 @@
-import { createContract } from "./api"
+import { createContract, showContracts } from "./api"
+import { CreateContractData } from "./types"
 
-async function main() {
-  const chainId = 80001 // mumbai
-  const name = "Thentic Tobias Leinss Application"
-  const shortName = "TTLA"
-
-  const nftData = { chainId, name, shortName }
-
+async function createNftContract(nftData: CreateContractData) {
   try {
     const { status, data } = await createContract(nftData)
 
@@ -18,9 +13,23 @@ async function main() {
     } else {
       console.error(`There was an error with the request. Please try again`)
     }
-  } catch (e) {
+  } catch (e: any) {
     console.error(`Nft Contract couldn't be created! ${e.message}`)
   }
+}
+
+async function main() {
+  const chainId = 80001 // mumbai
+  const name = "Thentic Tobias Leinss Application"
+  const shortName = "TTLA"
+
+  const nftData = { chainId, name, shortName }
+
+  // await createNftContract(nftData)
+
+  const { data } = await showContracts({ chainId })
+  console.log("Found following contracts: ")
+  console.log(data)
 }
 
 main()

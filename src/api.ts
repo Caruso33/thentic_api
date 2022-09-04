@@ -1,15 +1,10 @@
+import { CreateContractData, ShowContracts } from "./types"
 import axios from "axios"
 import "dotenv/config"
 
 const THENTIC_API_KEY = process.env.THENTIC_API_KEY
 
-interface createContractData {
-  chainId: number
-  name: string
-  shortName: string
-}
-
-export function createContract(nftData: createContractData) {
+export function createContract(nftData: CreateContractData) {
   const { chainId, name, shortName } = nftData
 
   const data = {
@@ -31,4 +26,10 @@ export function createContract(nftData: createContractData) {
   }
 
   return axios.request(options)
+}
+
+export function showContracts(nftData: ShowContracts) {
+  return axios.get(
+    `https://thentic.tech/api/contracts?key=${THENTIC_API_KEY}&chain_id=${nftData.chainId}`
+  )
 }
