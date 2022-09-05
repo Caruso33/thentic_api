@@ -1,11 +1,18 @@
-import { createContract, showContracts } from "./api"
-import { CreateContractData, ShowContractsData } from "./types"
+import { createContract, mintNft, showContracts, showNfts } from "./api"
+import {
+  CreateContractData,
+  IntermediateMintNftData,
+  ShowContractsData,
+  ShowNftsData,
+} from "./types"
 import fs from "fs"
 import path from "path"
 
-async function createNftContract(nftData: CreateContractData): Promise<void> {
+async function createNftContract(
+  nftContractData: CreateContractData
+): Promise<void> {
   try {
-    const { status, data } = await createContract(nftData)
+    const { status, data } = await createContract(nftContractData)
 
     if (status === 200) {
       console.log(
@@ -21,10 +28,10 @@ async function createNftContract(nftData: CreateContractData): Promise<void> {
 }
 
 async function showNftContracts(
-  nftData: ShowContractsData
+  nftContractData: ShowContractsData
 ): Promise<any | void> {
   try {
-    const { data } = await showContracts(nftData)
+    const { data } = await showContracts(nftContractData)
 
     return data?.contracts
   } catch (e: any) {
@@ -51,12 +58,48 @@ async function readData(dirPath: string) {
   return parsedJsonData
 }
 
+async function showCurrentNfts(
+  nftContractData: ShowNftsData
+): Promise<any | void> {
+  try {
+    const { data } = await showNfts(nftContractData)
+
+    return data?.nfts
+  } catch (e: any) {
+    console.error(`Error showing Nfts: ${e.message}`)
+  }
+}
+
+async function mintNfts(
+  nftData: Record<string, any>[],
+  nftMintingData: IntermediateMintNftData
+) {
+  for (const [i, data] of Object.entries(nftData)) {
+    if (i !== "0") continue
+
+    const nftIndex = nftMintingData.nftIndex + +i
+
+    try {
+      await mintNft({
+        ...nftMintingData,
+        nftIndex,
+        nftData: data,
+      })
+    } catch (e: any) {
+      console.log(e)
+      console.error(`Error minting Nft: ${e.message}`)
+    }
+  }
+}
+
 async function main() {
   const chainId = 80001 // mumbai
   const name = "Thentic Tobias Leinss Application"
   const shortName = "TTLA"
 
   const nftContractData = { chainId, name, shortName }
+
+  const ownerAddress = "0x4bFC74983D6338D3395A00118546614bB78472c2"
 
   // await createNftContract(nftContractData)
 
@@ -70,12 +113,29 @@ async function main() {
     console.log(contractData)
   }
 
+  // always use first contract (in my solution)
   const contractAddress = contractData[0].contract
   console.log(`Contract address is: ${contractAddress}`)
 
   const dirPath = "./data"
   const nftData = await readData(dirPath)
-  console.dir(nftData)
+  console.log(`Nft Data found in path: ${JSON.stringify(nftData, null, 2)}`)
+
+  const currentNfts = await showCurrentNfts(nftContractData)
+  console.log(
+    `Current existing Nfts in contracts: ${
+      currentNfts?.length === 0 ? 0 : currentNfts
+    }`
+  )
+
+  const nftMintingData = {
+    chainId,
+    contract: contractAddress,
+    to: ownerAddress,
+    nftIndex: currentNfts?.length,
+  }
+
+  await mintNfts(nftData, nftMintingData)
 }
 
 main()
