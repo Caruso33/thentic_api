@@ -1,5 +1,9 @@
 # Thentic APIs
 
+## Setup
+
+`cp .env.example .env` - add env variables with your api key
+
 ## Install
 
 `yarn`
