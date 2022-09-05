@@ -21,3 +21,11 @@ export interface IntermediateMintNftData {
 export interface MintNftData extends IntermediateMintNftData {
   nftData: any
 }
+
+export interface TransferNftData {
+  chainId: number
+  contract: string
+  nftIndex: number
+  from: string
+  to: string
+}

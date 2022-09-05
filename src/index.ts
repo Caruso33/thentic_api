@@ -1,12 +1,20 @@
-import { createContract, mintNft, showContracts, showNfts } from "./api"
+import {
+  createContract,
+  mintNft,
+  showContracts,
+  showNfts,
+  transferNft,
+} from "./api"
 import {
   CreateContractData,
   IntermediateMintNftData,
   ShowContractsData,
   ShowNftsData,
+  TransferNftData,
 } from "./types"
 import fs from "fs"
 import path from "path"
+import { AxiosResponse } from "axios"
 
 async function createNftContract(
   nftContractData: CreateContractData
@@ -64,6 +72,14 @@ async function showCurrentNfts(
   try {
     const { data } = await showNfts(nftContractData)
 
+    console.log(
+      `Current existing Nfts in the given contract: ${JSON.stringify(
+        data.nfts,
+        null,
+        2
+      )}`
+    )
+
     return data?.nfts
   } catch (e: any) {
     console.error(`Error showing Nfts: ${e.message}`)
@@ -74,21 +90,48 @@ async function mintNfts(
   nftData: Record<string, any>[],
   nftMintingData: IntermediateMintNftData
 ) {
+  const results: AxiosResponse[] = []
+
   for (const [i, data] of Object.entries(nftData)) {
     if (i !== "0") continue
 
     const nftIndex = nftMintingData.nftIndex + +i
 
     try {
-      await mintNft({
+      const result = await mintNft({
         ...nftMintingData,
         nftIndex,
         nftData: data,
       })
+
+      results.push(result.data)
     } catch (e: any) {
       console.log(e)
       console.error(`Error minting Nft: ${e.message}`)
     }
+  }
+
+  console.log(`Minted ${results.length} Nft(s).`)
+  console.log(
+    `Open the following urls in your browser to sign the transactions`
+  )
+  console.log(results.map((r: any) => r.transaction_url).join(" , "))
+
+  return results
+}
+
+async function transferANft(nftData: TransferNftData) {
+  try {
+    const { data } = await transferNft(nftData)
+
+    console.log(`Transfered Nft with Index ${nftData.nftIndex}.`)
+    console.log(
+      `Open the following urls in your browser to sign the transaction ${data.transaction_url}`
+    )
+
+    return data
+  } catch (e: any) {
+    console.error(`Error transfering Nft: ${e.message}`)
   }
 }
 
@@ -100,6 +143,7 @@ async function main() {
   const nftContractData = { chainId, name, shortName }
 
   const ownerAddress = "0x4bFC74983D6338D3395A00118546614bB78472c2"
+  const transferToAddress = "0x6a439b14f527d8731794B982d785b72F5d245c6f"
 
   // await createNftContract(nftContractData)
 
@@ -122,20 +166,30 @@ async function main() {
   console.log(`Nft Data found in path: ${JSON.stringify(nftData, null, 2)}`)
 
   const currentNfts = await showCurrentNfts(nftContractData)
-  console.log(
-    `Current existing Nfts in contracts: ${
-      currentNfts?.length === 0 ? 0 : currentNfts
-    }`
-  )
 
-  const nftMintingData = {
-    chainId,
-    contract: contractAddress,
-    to: ownerAddress,
-    nftIndex: currentNfts?.length,
-  }
+  // Mint Nft
 
-  await mintNfts(nftData, nftMintingData)
+  // const nftMintingData = {
+  //   chainId,
+  //   contract: contractAddress,
+  //   to: ownerAddress,
+  //   nftIndex: currentNfts?.length,
+  // }
+
+  // await mintNfts(nftData, nftMintingData)
+
+  // Transfer Nft
+
+  // const nftToTransfer = 1
+  // const nftTransferData = {
+  //   chainId,
+  //   contract: contractAddress,
+  //   from: ownerAddress,
+  //   to: transferToAddress,
+  //   nftIndex: nftToTransfer,
+  // }
+
+  // await transferANft(nftTransferData)
 }
 
 main()
