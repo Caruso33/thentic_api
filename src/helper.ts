@@ -93,8 +93,6 @@ export async function mintNfts(
   const results: AxiosResponse[] = []
 
   for (const [i, data] of Object.entries(nftData)) {
-    if (i !== "0") continue
-
     const nftIndex = nftMintingData.nftIndex + +i
 
     try {

@@ -55,29 +55,29 @@ async function main() {
   // Mint Nft
   //
 
-  // const nftMintingData = {
-  //   chainId,
-  //   contract: contractAddress,
-  //   to: ownerAddress,
-  //   nftIndex: currentNfts?.length,
-  // }
+  const nftMintingData = {
+    chainId,
+    contract: contractAddress,
+    to: ownerAddress,
+    nftIndex: currentNfts?.length,
+  }
 
-  // await mintNfts(nftData, nftMintingData)
+  await mintNfts(nftData, nftMintingData)
 
   //
   // Transfer Nft
   //
 
-  // const nftToTransfer = 1
-  // const nftTransferData = {
-  //   chainId,
-  //   contract: contractAddress,
-  //   from: ownerAddress,
-  //   to: transferToAddress,
-  //   nftIndex: nftToTransfer,
-  // }
+  const nftToTransfer = 1
+  const nftTransferData = {
+    chainId,
+    contract: contractAddress,
+    from: ownerAddress,
+    to: transferToAddress,
+    nftIndex: nftToTransfer,
+  }
 
-  // await transferANft(nftTransferData)
+  await transferANft(nftTransferData)
 }
 
 main()
